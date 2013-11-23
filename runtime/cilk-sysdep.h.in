@@ -431,7 +431,7 @@ static inline int Cilk_xchg(volatile int *ptr, int val)
 		      "teq    %0, #0\n"
 		      "bne    1b"
 		      : "=&r" (tmp), "=&r" (old)
-		      : "r" (ptr), "r" (var)
+		      : "r" (ptr), "r" (val)
 		      : "cc", "memory");
   return old;
 }
