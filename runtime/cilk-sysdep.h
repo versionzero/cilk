@@ -411,6 +411,34 @@ FILE_IDENTITY(ident_cilk_sysdep_h,
    }
 #endif /* __alpha__ */
 
+/*------------------------
+  arm
+  ------------------------*/
+#ifdef __arm__
+
+#define CILK_CACHE_LINE 32
+
+#define CILK_MB()  __asm__ __volatile__ ("dmb" : : : "memory")
+#define CILK_RMB() CILK_MB()
+#define CILK_WMB() CILK_MB()
+
+/* atomic swap operation */
+static inline int Cilk_xchg(volatile int *ptr, int val)
+{
+  int tmp, old;
+  __asm__ __volatile__("1:\n"
+		      "ldrex  %1, [%2]\n"
+		      "strex  %0, %3, [%2]\n"
+		      "teq    %0, #0\n"
+		      "bne    1b"
+		      : "=&r" (tmp), "=&r" (old)
+		      : "r" (ptr), "r" (var)
+		      : "cc", "memory");
+  return old;
+}
+
+#endif /* __arm__ */
+
 #ifndef CILK_CACHE_LINE
 #  error "Unsupported CPU"
 #endif
